@@ -1,3 +1,7 @@
 .idea/
 venv/
 *.cpp
+*.log
+*.o
+*.so
+*.a
