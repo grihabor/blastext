@@ -5,3 +5,6 @@ venv/
 *.o
 *.so
 *.a
+.built
+*.d
+*.dep
