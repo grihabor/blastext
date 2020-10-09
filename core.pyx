@@ -1,14 +1,40 @@
 # cython: language_level=3
-from core cimport SSeqLoc, CBl2Seq, eBlastp
+from core cimport (
+    CLocalBlast, CRef, CBlastOptionsHandle, IQueryFactory,
+    CObjMgr_QueryFactory, CSearchDatabase, EProgram, CObjectManager,
+    SDataLoaderConfig, CBlastInputSourceConfig, CBlastFastaInputSource,
+    CScope
+)
+from libcpp.vector cimport vector
+from libcpp.string cimport string
+from cython.operator import dereference
 
+
+# see ./src/sample/app/blast/blast_demo.cpp
 def main():
-    # cdef CRef[CObjectManager] obj_manager = CObjectManager.GetInstance()
-    # cdef CScope *scope = new CScope(obj_manager.GetObject())
-    #
-    # sl1 = new CSeq_loc()
-    # sl2 = new CSeq_loc()
+    cdef EProgram program = EProgram.eBlastp
 
-    cdef SSeqLoc loc = SSeqLoc()
-    cdef CBl2Seq *seq = new CBl2Seq(loc, loc, eBlastp)
-    seq.Run()
+    cdef CRef[CBlastOptionsHandle] opts
+    opts.Reset(CBlastOptionsFactory.Create(program, CBlastOptions.EAPILocality.eLocal))
+    dereference(opts).Validate()
+
+    cdef CRef[CObjectManager] objmgr = CObjectManager.GetInstance()
+    if objmgr.Empty():
+        print("failed to initialize object manager")
+
+    cdef SDataLoaderConfig* dlconfig = new SDataLoaderConfig(False, SDataLoaderConfig.EConfigOpts.eDefault)
+    cdef CBlastInputSourceConfig* iconfig = new CBlastInputSourceConfig(dereference(dlconfig))
+    fasta_path = b"in.fasta"
+    cdef CBlastFastaInputSource* fasta_input = new CBlastFastaInputSource(fasta_path, dereference(iconfig))
+    cdef CScope* scope = new CScope(dereference(objmgr))
+
+    cdef string name = b"test"
+    cdef CSearchDatabase* db = new CSearchDatabase(name, CSearchDatabase.EMoleculeType.eBlastDbIsProtein)
+
+    cdef vector[SSeqLoc] v
+    cdef CRef[IQueryFactory] q
+    q.Reset(new CObjMgr_QueryFactory(v))
+    cdef CLocalBlast* blast = new CLocalBlast(q, opts, dereference(db))
+    blast.Run()
+
 
