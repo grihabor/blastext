@@ -15,9 +15,10 @@ CPPFLAGS = $(ORIG_CPPFLAGS) $(NCBI_C_INCLUDE) -I/usr/include/python3.6m
 # CFLAGS   = $(FAST_CFLAGS)
 # CXXFLAGS = $(FAST_CXXFLAGS)
 
-LIBS = -lpython3.6m -lxblast -lxalgoblastdbindex -lcomposition_adjustment \
+LIBS = -lpython3.6m -lxvalidate -lxblast -lxalgoblastdbindex -lcomposition_adjustment \
     -lxalgowinmask -lxalgodustmask -lseqmasks_io -lxnetblastcli -lxnetblast \
     -lscoremat -lseqset -lpub -lmedline -lbiblio -lgeneral -lxser -lxutil \
-    -lxncbi -lseqdb -lxobjutil -lblastdb -lxconnect -ltables
+    -lxncbi -lseqdb -lxobjutil -lblastdb -lxalgognomon -lxalgoseq -lxalnmgr \
+    -lxobjutil -ltaxon1 -lxconnect -ltables
 
-LIB_OR_DLL = both
+LIB_OR_DLL = dll
